@@ -28,10 +28,6 @@ const allowedTemplateContents = {
 // Merge template with new project being created
 export default async function mergeTemplate(scope: Scope, rootPath: string) {
 
-  fse.readdirSync('/tmp/my-project').forEach(file => {
-    console.log(file);
-  });
-
   if (!scope.template) {
     throw new Error('Missing template or example app option');
   }
@@ -76,11 +72,6 @@ export default async function mergeTemplate(scope: Scope, rootPath: string) {
   if (!isLocalTemplate && templateParentPath) {
     await fse.remove(templateParentPath);
   }
-
-
-  fse.readdirSync('/tmp/my-project').forEach(file => {
-    console.log(file);
-  });
 }
 
 // Make sure the template has the required top-level structure

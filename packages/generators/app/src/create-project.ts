@@ -22,8 +22,6 @@ const resources = join(__dirname, 'resources');
 export default async function createProject(scope: Scope) {
   console.log(`Creating a new Strapi application at ${chalk.green(scope.rootPath)}.\n`);
 
-  console.log(scope);
-
   const { rootPath, useTypescript } = scope;
 
   if (!scope.isQuickstart) {
@@ -232,7 +230,5 @@ function runInstall({ rootPath, packageManager }: Scope) {
     installArguments.push(...(installArgumentsMap[packageManager] ?? []));
   }
 
-  console.log(packageManager, installArguments, options);
-  
   return execa(packageManager, installArguments, options);
 }

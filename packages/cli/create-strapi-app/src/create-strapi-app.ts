@@ -115,7 +115,7 @@ async function createStrapiApp(directory: string | undefined, options: Options) 
         process.exit(0);
       }
     })
-    .catch((error: { message: any; }) => {
+    .catch((error: { message: any }) => {
       console.error(`Error: ${error.message}`);
       process.exit(1);
     });

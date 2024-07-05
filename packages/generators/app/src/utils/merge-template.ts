@@ -27,7 +27,6 @@ const allowedTemplateContents = {
 
 // Merge template with new project being created
 export default async function mergeTemplate(scope: Scope, rootPath: string) {
-
   if (!scope.template) {
     throw new Error('Missing template or example app option');
   }
@@ -41,14 +40,22 @@ export default async function mergeTemplate(scope: Scope, rootPath: string) {
 
   // Force templatePath to point to the internal example template
   if (scope.useExampleApp) {
-    templatePath = path.resolve(__dirname, '..', 'resources', 'templates', 'example-app', scope.useTypescript ? 'ts' : 'js');
+    templatePath = path.resolve(
+      __dirname,
+      '..',
+      'resources',
+      'templates',
+      'example-app',
+      scope.useTypescript ? 'ts' : 'js'
+    );
   }
 
   if (isLocalTemplate) {
     // Template is a local directory
     console.log('Installing local template.');
     templatePath = path.resolve(rootPath, '..', scope.template);
-  } else if (scope.template && scope.template !== 'example') { // Skipping this block for the example template
+  } else if (scope.template && scope.template !== 'example') {
+    // Skipping this block for the example template
     // Template should be an npm package. Fetch template info
     templatePackageInfo = await getTemplatePackageInfo(scope.template);
     console.log(`Installing ${chalk.yellow(templatePackageInfo.name)} template.`);

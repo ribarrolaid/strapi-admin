@@ -93,10 +93,7 @@
         },
         {
           "__component": "shared.slider",
-          "files": [
-            "coffee-art.jpg",
-            "coffee-beans.jpg"
-          ]
+          "files": ["coffee-art.jpg", "coffee-beans.jpg"]
         }
       ]
     },
@@ -131,10 +128,7 @@
         },
         {
           "__component": "shared.slider",
-          "files": [
-            "coffee-art.jpg",
-            "coffee-beans.jpg"
-          ]
+          "files": ["coffee-art.jpg", "coffee-beans.jpg"]
         }
       ]
     },
@@ -169,10 +163,7 @@
         },
         {
           "__component": "shared.slider",
-          "files": [
-            "coffee-art.jpg",
-            "coffee-beans.jpg"
-          ]
+          "files": ["coffee-art.jpg", "coffee-beans.jpg"]
         }
       ]
     },
@@ -207,10 +198,7 @@
         },
         {
           "__component": "shared.slider",
-          "files": [
-            "coffee-art.jpg",
-            "coffee-beans.jpg"
-          ]
+          "files": ["coffee-art.jpg", "coffee-beans.jpg"]
         }
       ]
     },
@@ -245,10 +233,7 @@
         },
         {
           "__component": "shared.slider",
-          "files": [
-            "coffee-art.jpg",
-            "coffee-beans.jpg"
-          ]
+          "files": ["coffee-art.jpg", "coffee-beans.jpg"]
         }
       ]
     }

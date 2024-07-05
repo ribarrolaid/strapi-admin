@@ -14,13 +14,15 @@ import type {
 import type {
   CreateRelease,
   DeleteRelease,
-  GetContentTypeEntryReleases,
   GetReleases,
+  GetReleasesByDocumentAttached,
   UpdateRelease,
   GetRelease,
   PublishRelease,
   MapEntriesToReleases,
 } from '../../../shared/contracts/releases';
+import type { GetSettings, UpdateSettings } from '../../../shared/contracts/settings';
+import type { EndpointDefinition } from '@reduxjs/toolkit/query';
 
 export interface GetReleasesQueryParams {
   page?: number;
@@ -45,20 +47,76 @@ type GetReleasesTabResponse = GetReleases.Response & {
   };
 };
 
+type AnyEndpointDefinition = EndpointDefinition<any, any, any, any>;
+
+// TODO: move this into the admin code & expose an improved version of enhanceEndpoints or a new function
+const extendInvalidatesTags = (
+  endpoint: AnyEndpointDefinition,
+  extraTags: string[] | { type: string; id: string }[]
+) => {
+  if (!endpoint) {
+    return;
+  }
+
+  const originalInvalidatesTags = endpoint.invalidatesTags;
+
+  const newInvalidatesTags: AnyEndpointDefinition['invalidatesTags'] = (
+    result,
+    err,
+    args,
+    meta
+  ) => {
+    const originalTags =
+      typeof originalInvalidatesTags === 'function'
+        ? originalInvalidatesTags(result, err, args, meta)
+        : originalInvalidatesTags;
+
+    return [...(originalTags ?? []), ...extraTags];
+  };
+
+  Object.assign(endpoint, { invalidatesTags: newInvalidatesTags });
+};
+
 const releaseApi = adminApi
   .enhanceEndpoints({
-    addTagTypes: ['Release', 'ReleaseAction', 'EntriesInRelease'],
+    addTagTypes: ['Release', 'ReleaseAction', 'EntriesInRelease', 'ReleaseSettings'],
+    endpoints: {
+      updateDocument(endpoint: AnyEndpointDefinition) {
+        extendInvalidatesTags(endpoint, [
+          { type: 'Release', id: 'LIST' },
+          { type: 'ReleaseAction', id: 'LIST' },
+        ]);
+      },
+      deleteDocument(endpoint: AnyEndpointDefinition) {
+        extendInvalidatesTags(endpoint, [
+          { type: 'Release', id: 'LIST' },
+          { type: 'ReleaseAction', id: 'LIST' },
+        ]);
+      },
+      deleteManyDocuments(endpoint: AnyEndpointDefinition) {
+        extendInvalidatesTags(endpoint, [
+          { type: 'Release', id: 'LIST' },
+          { type: 'ReleaseAction', id: 'LIST' },
+        ]);
+      },
+      discardDocument(endpoint: AnyEndpointDefinition) {
+        extendInvalidatesTags(endpoint, [
+          { type: 'Release', id: 'LIST' },
+          { type: 'ReleaseAction', id: 'LIST' },
+        ]);
+      },
+    },
   })
   .injectEndpoints({
     endpoints: (build) => {
       return {
         getReleasesForEntry: build.query<
-          GetContentTypeEntryReleases.Response,
-          Partial<GetContentTypeEntryReleases.Request['query']>
+          GetReleasesByDocumentAttached.Response,
+          Partial<GetReleasesByDocumentAttached.Request['query']>
         >({
           query(params) {
             return {
-              url: '/content-releases',
+              url: '/content-releases/getByDocumentAttached',
               method: 'GET',
               config: {
                 params,
@@ -298,6 +356,20 @@ const releaseApi = adminApi
           },
           providesTags: [{ type: 'EntriesInRelease' }],
         }),
+        getReleaseSettings: build.query<GetSettings.Response, GetSettings.Request | void>({
+          query: () => '/content-releases/settings',
+          providesTags: [{ type: 'ReleaseSettings' }],
+        }),
+        updateReleaseSettings: build.mutation<void, UpdateSettings.Request['body']>({
+          query(data) {
+            return {
+              url: '/content-releases/settings',
+              method: 'PUT',
+              data,
+            };
+          },
+          invalidatesTags: (result, error, arg) => [{ type: 'ReleaseSettings' }],
+        }),
       };
     },
   });
@@ -316,6 +388,8 @@ const {
   useDeleteReleaseActionMutation,
   useDeleteReleaseMutation,
   useGetMappedEntriesInReleasesQuery,
+  useGetReleaseSettingsQuery,
+  useUpdateReleaseSettingsMutation,
 } = releaseApi;
 
 export {
@@ -332,5 +406,7 @@ export {
   useDeleteReleaseActionMutation,
   useDeleteReleaseMutation,
   useGetMappedEntriesInReleasesQuery,
+  useGetReleaseSettingsQuery,
+  useUpdateReleaseSettingsMutation,
   releaseApi,
 };

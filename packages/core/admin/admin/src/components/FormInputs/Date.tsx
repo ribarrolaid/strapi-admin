@@ -1,5 +1,6 @@
 import { forwardRef, memo } from 'react';
 
+import { getLocalTimeZone, parseAbsolute, toCalendarDate } from '@internationalized/date';
 import { DatePicker, useComposedRefs, Field } from '@strapi/design-system';
 import { useIntl } from 'react-intl';
 
@@ -24,10 +25,10 @@ const DateInput = forwardRef<HTMLInputElement, InputProps>(
           ref={composedRefs}
           clearLabel={formatMessage({ id: 'clearLabel', defaultMessage: 'Clear' })}
           onChange={(date) => {
-            field.onChange(name, date);
+            field.onChange(name, date ? convertLocalDateToUTCDate(date) : null);
           }}
-          onClear={() => field.onChange(name, undefined)}
-          value={value}
+          onClear={() => field.onChange(name, null)}
+          value={value ? convertLocalDateToUTCDate(value) : value}
           {...props}
         />
         <Field.Hint />
@@ -36,6 +37,18 @@ const DateInput = forwardRef<HTMLInputElement, InputProps>(
     );
   }
 );
+
+const convertLocalDateToUTCDate = (date: Date): Date => {
+  const utcDateString = date.toISOString();
+  const timeZone = getLocalTimeZone();
+  const zonedDateTime = parseAbsolute(utcDateString, timeZone);
+
+  /**
+   * ZonedDateTime can't have weeks added,
+   * see – https://github.com/adobe/react-spectrum/issues/3667
+   */
+  return toCalendarDate(zonedDateTime).toDate('UTC');
+};
 
 const MemoizedDateInput = memo(DateInput);
 

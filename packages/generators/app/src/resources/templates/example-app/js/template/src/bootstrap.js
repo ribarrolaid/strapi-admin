@@ -63,10 +63,10 @@ function getFileData(fileName) {
   const mimeType = mime.lookup(ext);
 
   return {
-    path: filePath,
-    name: fileName,
+    filepath: filePath,
+    originalFileName: fileName,
     size,
-    type: mimeType,
+    mimetype: mimeType,
   };
 }
 

@@ -115,7 +115,7 @@ const LeftMenu = () => {
                 return (
                   // @ts-expect-error – DS inference does not work with the `as` prop.
                   <SubNavLink as={NavLink} key={link.uid} to={`${link.to}${search}`}>
-                    {link.title}
+                    LINK ----- {link.title}
                   </SubNavLink>
                 );
               })}
